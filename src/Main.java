@@ -32,11 +32,15 @@ public class Main {
 
 	// Hier ist Platz fuer Ihre Tests
 	public static void main(String[] args) {
-		Puzzle example = new Puzzle(0, 1, 2, 3, 4, 5, 6, 7, 8);
-		Puzzle example1 = new Puzzle(0, 1, 2, 3, 4, 5, 6, 7, 8);
-		System.out.println(example);
-		System.out.println(example.equals(example1));
-		//Summary summary = PuzzleSolver.AStar(example, PuzzleSolver.Heuristic.MANHATTAN, false, 0, 0);
-		//System.out.println(summary);
+		//Puzzle example = new Puzzle(0, 1, 2, 3, 4, 5, 6, 7, 8);
+		Puzzle example = new Puzzle(
+				3,1,5,
+				2,7,4,
+				8,0,6);
+		//Puzzle example = new Puzzle(1,8,2,0,4,3,7,6,5);
+		Summary summary = PuzzleSolver.greedy(example, PuzzleSolver.Heuristic.MANHATTAN, true,0,0);
+		System.out.println(summary);
+		summary = PuzzleSolver.AStar(example, PuzzleSolver.Heuristic.MANHATTAN, false, 0, 0);
+		System.out.println(summary);
 	}
 }

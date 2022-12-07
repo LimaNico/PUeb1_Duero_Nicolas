@@ -1,6 +1,3 @@
-import java.lang.reflect.Array;
-import java.util.Arrays;
-
 public class Puzzle {
 	// gesuchter Zielzustand
 	public static Puzzle goal = new Puzzle(new int[][] {
@@ -39,41 +36,23 @@ public class Puzzle {
 	
 	// Berechnung der Summe aller (vertikalen und horizontalen) Distanzen der Kacheln 1 bis 8 zur jeweiligen Zielposition
 	public int manhattanDist() {
-		//ToDo
-		int[][] positions = new int[][]{
-				{1,1},{0,0},{0,1},{0,2},{1,2},{2,2},{2,1},{2,0},{1,0}
-		};
 		int manhattanDist = 0;
-		for (int i = 0; i < 3; i++) {
-			for (int k = 0; k < 3; k++) {
-				if(state[i][k] != 0){
-					//System.out.println(state[i][k]);
-					//System.out.print(i+"-"+positions[state[i][k]][0]+"+"+ k +"-"+positions[state[i][k]][1]);
-
-					int sum = Math.abs(i - positions[state[i][k]][0]) + Math.abs(k - positions[state[i][k]][1]);
-					//System.out.println("="+sum);
-
-					manhattanDist += Math.abs(i - positions[state[i][k]][0]) + Math.abs(k - positions[state[i][k]][1]);
-				}
-			}
+		for (int i = 1; i < 9; i++) {
+			manhattanDist += Math.abs(position(i)[0]-goal.position(i)[0]) + Math.abs(position(i)[1]-goal.position(i)[1]);
 		}
-
 		return manhattanDist;
 	}
 
-	public int[] position(){
+	public int[] position(int k){
 
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				if (state[i][j]==0) return new int[]{i, j};
+				if (state[i][j]==k) return new int[]{i, j};
 			}
 		}
 		return null;
 	}
 
-	public int[][] getState() {
-		return state;
-	}
 	public int[][] copyState(){
 		int[][] copiedState = new int[3][3];
 		for (int i = 0; i < 3; i++) {
@@ -86,82 +65,88 @@ public class Puzzle {
 
 
 	public boolean canMoveLeft() {
-		int[] pos = position();
-		if (pos[0]>0) return true;
-		else return false;
-	}
-	
-	public boolean canMoveRight() {
-		int[] pos = position();
-		if (pos[0]<2) return true;
-		else return false;
-	}
-	
-	public boolean canMoveUp() {
-		int[] pos = position();
+		int[] pos = position(0);
 		if (pos[1]>0) return true;
 		else return false;
 	}
 	
-	public boolean canMoveDown() {
-		int[] pos = position();
+	public boolean canMoveRight() {
+		int[] pos = position(0);
 		if (pos[1]<2) return true;
 		else return false;
 	}
 	
+	public boolean canMoveUp() {
+		int[] pos = position(0);
+		if (pos[0]>0) return true;
+		else return false;
+	}
+	
+	public boolean canMoveDown() {
+		int[] pos = position(0);
+		if (pos[0]<2) return true;
+		else return false;
+	}
+	
 	public Puzzle moveLeft() {
-		if (canMoveLeft()){
-			int[] pos = position();
-			Puzzle newPuzzle = new Puzzle(copyState());
-			newPuzzle.state[pos[0]][pos[1]] = newPuzzle.state[pos[0]][pos[1]-1];
-			newPuzzle.state[pos[0]][pos[1]-1] = 0;
-			return newPuzzle;
-		}
-		else return null;
+		int[] pos = position(0);
+		Puzzle newPuzzle = new Puzzle(copyState());
+		newPuzzle.state[pos[0]][pos[1]] = newPuzzle.state[pos[0]][pos[1]-1];
+		newPuzzle.state[pos[0]][pos[1]-1] = 0;
+		return newPuzzle;
 	}
 	
 	public Puzzle moveRight() {
-		if (canMoveRight()){
-			int[] pos = position();
-			Puzzle newPuzzle = new Puzzle(copyState());
-			newPuzzle.state[pos[0]][pos[1]] = newPuzzle.state[pos[0]][pos[1]+1];
-			newPuzzle.state[pos[0]][pos[1]+1] = 0;
-			return newPuzzle;
-		}
-		else return null;
+		int[] pos = position(0);
+		Puzzle newPuzzle = new Puzzle(copyState());
+		newPuzzle.state[pos[0]][pos[1]] = newPuzzle.state[pos[0]][pos[1]+1];
+		newPuzzle.state[pos[0]][pos[1]+1] = 0;
+		return newPuzzle;
 	}
 	
 	public Puzzle moveUp() {
-		if (canMoveUp()){
-			int[] pos = position();
-			Puzzle newPuzzle = new Puzzle(copyState());
-			newPuzzle.state[pos[0]][pos[1]] = newPuzzle.state[pos[0]-1][pos[1]];
-			newPuzzle.state[pos[0]-1][pos[1]] = 0;
-			return newPuzzle;
-		}
-		else return null;
+		int[] pos = position(0);
+		Puzzle newPuzzle = new Puzzle(copyState());
+		newPuzzle.state[pos[0]][pos[1]] = newPuzzle.state[pos[0]-1][pos[1]];
+		newPuzzle.state[pos[0]-1][pos[1]] = 0;
+		return newPuzzle;
 	}
 	
 	public Puzzle moveDown() {
-		if (canMoveDown()){
-			int[] pos = position();
-			Puzzle newPuzzle = new Puzzle(copyState());
-			newPuzzle.state[pos[0]][pos[1]] = newPuzzle.state[pos[0]+1][pos[1]];
-			newPuzzle.state[pos[0]+1][pos[1]] = 0;
-			return newPuzzle;
-		}
-		else return null;
+		int[] pos = position(0);
+		Puzzle newPuzzle = new Puzzle(copyState());
+		newPuzzle.state[pos[0]][pos[1]] = newPuzzle.state[pos[0]+1][pos[1]];
+		newPuzzle.state[pos[0]+1][pos[1]] = 0;
+		return newPuzzle;
 	}
 
 	public boolean equals(Puzzle p) {
+		if (p == null) return false;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				if (state[i][j]!=p.state[i][j]) return false;
+				//System.out.println(state[i][j] + "!=" + p.state[i][j] + "=" + (state[i][j] != p.state[i][j]));
+				if (state[i][j] != p.state[i][j]) return false;
 			}
-			return true;
-
 		}
-		return false;
+		return true;
+
+	}
+
+	public String moveBefore(Puzzle p){
+		// Checks if the inputted Puzzle is a possible move before and from which direction
+		if (canMoveUp()){
+			if (p.equals(moveUp())) return "D";
+		}
+		if (canMoveDown()){
+			if (p.equals(moveDown())) return "U";
+		}
+		if (canMoveLeft()){
+			if (p.equals(moveLeft())) return "R";
+		}
+		if (canMoveRight()){
+			if (p.equals(moveRight())) return "L";
+		}
+		return "error";
 	}
 
 	// Ausgabe des Zustands als String
