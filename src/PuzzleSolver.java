@@ -23,7 +23,10 @@ public class PuzzleSolver {
 			node = queue.poll();
 			if ((node.getPuzzle().equals(Puzzle.goal))) break;
 
-			while (alreadyVisited(node,visited) && detectDouble) node = queue.poll();
+			while (alreadyVisited(node,visited) && detectDouble) {
+				node = queue.poll();
+				if ((node.getPuzzle().equals(Puzzle.goal))) break;
+			}
 
 			summary.maxDepthReached = Math.max(currentDepth(node), summary.maxDepthReached);
 			if (currentDepth(node)==maxDepth) continue;
@@ -71,7 +74,10 @@ public class PuzzleSolver {
 			node = queue.poll();
 			if ((node.getPuzzle().equals(Puzzle.goal))) break;
 
-			while (alreadyVisited(node,visited) && detectDouble) node = queue.poll();
+			while (alreadyVisited(node,visited) && detectDouble){
+				node = queue.poll();
+				if ((node.getPuzzle().equals(Puzzle.goal))) break;
+			}
 
 			summary.maxDepthReached = Math.max(currentDepth(node), summary.maxDepthReached);
 			if (currentDepth(node)==maxDepth) continue;
