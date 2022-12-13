@@ -1,22 +1,28 @@
 public class PuzzleNode {
-    private final PuzzleNode parent;
+    private PuzzleNode parent;
     private final Puzzle puzzle;
-    private final String action;
-    private int pathCost = 0;
-    private String path = "";
+    private String action;
 
+    // Initialisierung
     public PuzzleNode(PuzzleNode parent, Puzzle puzzle, String action){
         this.parent = parent;
-        if (parent != null){
-            this.pathCost = parent.pathCost+1;
-            this.path = parent.getPath() + action;
-        }
         this.action = action;
         this.puzzle = puzzle;
     }
 
+    // Gibt die Kosten von der Wurzel bis zum derzeitigen Knoten aus
     public int getPathCost() {
-        return pathCost;
+        PuzzleNode node = this;
+        int cost = 0;
+        while (node != null){
+            cost++;
+            node = node.getParent();
+        }
+        return cost;
+    }
+
+    public String getAction() {
+        return action;
     }
 
     public Puzzle getPuzzle() {
@@ -27,13 +33,23 @@ public class PuzzleNode {
         return parent;
     }
 
-    public boolean equals(PuzzleNode node){
-        if (node == null) return false;
-        return getPuzzle().equals(node.getPuzzle());
+    // Gibt den Pfad von der Wurzel bis zum derzeitigen Knoten aus
+    public String getPath(){
+        PuzzleNode node = this;
+        StringBuilder path = new StringBuilder();
+        while (node != null){
+            path.insert(0, node.getAction());
+            node = node.getParent();
+        }
+        return path.toString();
     }
 
-    public String getPath(){
-        return path;
+    public void setParent(PuzzleNode parent) {
+        this.parent = parent;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
     }
 }
 

@@ -43,6 +43,7 @@ public class Puzzle {
 		return manhattanDist;
 	}
 
+	//	Rückgabe der Position als Array mit dem Wert k
 	public int[] position(int k){
 
 		for (int i = 0; i < 3; i++) {
@@ -53,41 +54,40 @@ public class Puzzle {
 		return null;
 	}
 
+	// Gibt den ein Array zurück mit den Werten des derzeitigen States ohne Referenz
 	public int[][] copyState(){
 		int[][] copiedState = new int[3][3];
 		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
-				copiedState[i][j] = state[i][j];
-			}
+			System.arraycopy(state[i], 0, copiedState[i], 0, 3);
 		}
 		return copiedState;
 	}
 
-
+	//	Check ob 0 nach links bewegt werden kann.
 	public boolean canMoveLeft() {
 		int[] pos = position(0);
-		if (pos[1]>0) return true;
-		else return false;
+		return pos[1] > 0;
 	}
-	
+
+	//	Check ob 0 nach rechts bewegt werden kann.
 	public boolean canMoveRight() {
 		int[] pos = position(0);
-		if (pos[1]<2) return true;
-		else return false;
+		return pos[1] < 2;
 	}
-	
+
+	//	Check ob 0 nach oben bewegt werden kann.
 	public boolean canMoveUp() {
 		int[] pos = position(0);
-		if (pos[0]>0) return true;
-		else return false;
+		return pos[0] > 0;
 	}
-	
+
+	//	Check ob 0 nach unten bewegt werden kann.
 	public boolean canMoveDown() {
 		int[] pos = position(0);
-		if (pos[0]<2) return true;
-		else return false;
+		return pos[0] < 2;
 	}
-	
+
+	// Bewegt 0 nach links
 	public Puzzle moveLeft() {
 		int[] pos = position(0);
 		Puzzle newPuzzle = new Puzzle(copyState());
@@ -95,7 +95,8 @@ public class Puzzle {
 		newPuzzle.state[pos[0]][pos[1]-1] = 0;
 		return newPuzzle;
 	}
-	
+
+	// Bewegt 0 nach rechts
 	public Puzzle moveRight() {
 		int[] pos = position(0);
 		Puzzle newPuzzle = new Puzzle(copyState());
@@ -103,7 +104,8 @@ public class Puzzle {
 		newPuzzle.state[pos[0]][pos[1]+1] = 0;
 		return newPuzzle;
 	}
-	
+
+	// Bewegt 0 nach oben
 	public Puzzle moveUp() {
 		int[] pos = position(0);
 		Puzzle newPuzzle = new Puzzle(copyState());
@@ -111,7 +113,8 @@ public class Puzzle {
 		newPuzzle.state[pos[0]-1][pos[1]] = 0;
 		return newPuzzle;
 	}
-	
+
+	// Bewegt 0 nach unten
 	public Puzzle moveDown() {
 		int[] pos = position(0);
 		Puzzle newPuzzle = new Puzzle(copyState());
@@ -120,11 +123,11 @@ public class Puzzle {
 		return newPuzzle;
 	}
 
+	// Überprüft, ob dieses Puzzle und das übergebene Puzzle p gleich sind.
 	public boolean equals(Puzzle p) {
 		if (p == null) return false;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				//System.out.println(state[i][j] + "!=" + p.state[i][j] + "=" + (state[i][j] != p.state[i][j]));
 				if (state[i][j] != p.state[i][j]) return false;
 			}
 		}
@@ -132,26 +135,6 @@ public class Puzzle {
 
 	}
 
-	public String moveBefore(Puzzle p){
-		// Checks if the inputted Puzzle is a possible move before and from which direction
-		if (canMoveUp()){
-			if (p.equals(moveUp())) return "D";
-		}
-		if (canMoveDown()){
-			if (p.equals(moveDown())) return "U";
-		}
-		if (canMoveLeft()){
-			if (p.equals(moveLeft())) return "R";
-		}
-		if (canMoveRight()){
-			if (p.equals(moveRight())) return "L";
-		}
-		return "error";
-	}
-
-
-	// A utility function to count
-	// inversions in given array 'arr[]'
 	public int getInvCount(int[] arr)
 	{
 		int inv_count = 0;
@@ -164,24 +147,31 @@ public class Puzzle {
 		return inv_count;
 	}
 
-
+	// Gibt aus, ob ein Puzzle lösbar ist.
 	public boolean isSolvable()
 	{
-		int linearPuzzle[];
+		int[] linearPuzzle;
 		linearPuzzle = new int[9];
 		int k = 0;
-			// Converting 2-D puzzle to linear form
 		for(int i=0; i<3; i++)
 			for(int j=0; j<3; j++)
 				linearPuzzle[k++] = state[i][j];
-			// Count inversions in given 8 puzzle
 		int invCount = getInvCount(linearPuzzle);
-			// return true if inversion count is even.
 		return !(invCount % 2 == 0);
 	}
 
-
-
+	// Gibt den State als String aus, um ein HashKey zu erzeugen
+	public String getString2D(){
+		StringBuilder state2D = new StringBuilder();
+		for (int[] row:
+			 state) {
+			for (int value:
+				 row) {
+				state2D.append(value);
+			}
+		}
+		return state2D.toString();
+	}
 
 	// Ausgabe des Zustands als String
 	public String toString() {

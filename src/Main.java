@@ -1,7 +1,5 @@
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Random;
 
 public class Main {
 
@@ -11,7 +9,7 @@ public class Main {
 	public static String matrikel = "1592040"; // Tragen Sie hier Ihre Matrikelnummer ein
 
 	// Falls Sie mit einer weiteren Person zusammengarbeitet haben, tragen Sie hier den Namen dieser Person ein:
-	public static String gruppe   = "";
+	public static String gruppe   = "Artur Abramskij";
 
 	/* Vergessen Sie nicht, die nachfolgenden Behauptungen zu pruefen!
 	 * Wahr:   qX = true;
@@ -37,54 +35,61 @@ public class Main {
 
 	// Hier ist Platz fuer Ihre Tests
 	public static void main(String[] args) {
-		//Puzzle example = new Puzzle(0, 1, 2, 3, 4, 5, 6, 7, 8);
-		/*Puzzle example = new Puzzle(
-				8,1,2,
-				0,4,3,
-				7,6,5);
-		//Puzzle example = new Puzzle(1,8,2,0,4,3,7,6,5);
+		for (int i = 0; i < 200; i++) {
 
-		 */
+			Puzzle p = randomPuzzle();
+			while (!p.isSolvable()) p = randomPuzzle();
+			System.out.println(p);
+			Summary summary = PuzzleSolver.AStar(p, PuzzleSolver.Heuristic.MANHATTAN,true,40,0);
+			Summary summary1 = PuzzleSolver.AStar(p, PuzzleSolver.Heuristic.MANHATTAN,false,40,0);
+			System.out.println("Summary : "+summary.path);
+			System.out.println("Summary1: "+summary1.path);
+			System.out.println("pathCost equals? " + (summary.pathLength == summary1.pathLength));
+			if (summary1.path != null && summary.path!=null){
+				//System.out.println(summary1.path.equals(summary.path));
+				if (summary1.path.equals(summary.path)) continue;
+			}
 
-		int[][][] states = new int[][][]{
-				{
-						{7, 6, 1},
-						{2, 0, 5},
-						{3, 4, 8}
+			Puzzle p1 = new Puzzle(p.copyState());
+			if (summary.path != null){
+				for (char c:
+						summary.path.toCharArray()) {
+					switch (c) {
+						case 'L' -> p = p.moveLeft();
+						case 'R' -> p = p.moveRight();
+						case 'D' -> p = p.moveDown();
+						case 'U' -> p = p.moveUp();
+						default -> {
+							System.out.println("Fail");
+							System.out.println(c);
+						}
+					}
 				}
-		};
-		/*
-		for (int[][] state:
-			 states) {
-			Puzzle example = new Puzzle(state);
-			Summary summary = PuzzleSolver.greedy(example, PuzzleSolver.Heuristic.MANHATTAN, true,0,0);
-			System.out.println("Greedy:"+summary);
-			//if (example.isSolvable()!= summary.isSolution) System.out.println("Greedy: " + summary);
-			System.out.println("**********************");
-			summary = PuzzleSolver.AStar(example, PuzzleSolver.Heuristic.MANHATTAN, true, 0, 0);
-			System.out.println("A*:"+summary);
-			//if (example.isSolvable()!= summary.isSolution) System.out.println("A*: " + summary);
-			System.out.println("------------------");
-		}
+			}
+			if (summary1.path != null){
 
-		 */
-
-		for (int i = 0; i < 100; i++) {
-			Puzzle example = randomPuzzle();
-			//System.out.println(example);
-			//System.out.println("Lösbar:"+example.isSolvable());
-			if (!example.isSolvable()) continue;
-			Summary summary = PuzzleSolver.greedy(example, PuzzleSolver.Heuristic.MANHATTAN, true,0,0);
-			//System.out.println("Greedy:"+summary.isSolution);
-			if (example.isSolvable()!= summary.isSolution) System.out.println("Greedy: " + summary);
-			summary = PuzzleSolver.AStar(example, PuzzleSolver.Heuristic.MANHATTAN, true, 0, 0);
-			//System.out.println("A*:"+summary.isSolution);
-			if (example.isSolvable()!= summary.isSolution) System.out.println("A*: " + summary);
-			System.out.println("------------------");
+				for (char c:
+						summary1.path.toCharArray()) {
+					switch (c) {
+						case 'L' -> p1 = p1.moveLeft();
+						case 'R' -> p1 = p1.moveRight();
+						case 'D' -> p1 = p1.moveDown();
+						case 'U' -> p1 = p1.moveUp();
+						default -> {
+							System.out.println("Fail");
+							System.out.println(c);
+						}
+					}
+				}
+			}
+			System.out.println("P:\n"+p);
+			System.out.println("P1:\n"+p1);
+			System.out.println("__________________________________________________________");
 		}
 	}
 
 	public static Puzzle randomPuzzle(){
+		/*Funktion um Puzzle zu erstellen, welche zufällig sind*/
 		ArrayList<Integer> state = new ArrayList<>();
 		for (int i = 0; i < 9; i++) {
 			state.add(i);

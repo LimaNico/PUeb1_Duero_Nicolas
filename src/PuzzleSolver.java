@@ -2,6 +2,8 @@ import java.util.*;
 
 public class PuzzleSolver {
 	public static Summary greedy(Puzzle puzzle, Heuristic heuristic, boolean detectDouble, int maxDepth, int limit) {
+
+		// Zuweisung der bereits bekannten Summary Attribute
 		Summary summary = new Summary();
 		summary.startState = puzzle;
 		summary.algorithm = "Greedy";
@@ -10,9 +12,10 @@ public class PuzzleSolver {
 		summary.maxDepthPermitted=maxDepth;
 		summary.path ="";
 
+		// Erstellen einer PriorityQueue zur Bewertung der Nodes
+		// und einer LinkedList zur Speicherung der bereits besuchten Nodes
 		PriorityQueue<PuzzleNode> queue = getPriorityQueue(heuristic,Algorithm.Greedy);
-
-		LinkedList<PuzzleNode> visited = new LinkedList<>();
+		HashMap<String, PuzzleNode> visited = new HashMap<>();
 
 		queue.add(new PuzzleNode(null, puzzle,""));
 
@@ -20,39 +23,54 @@ public class PuzzleSolver {
 		PuzzleNode node = null;
 
 		while (queue.peek()!=null){
-			node = queue.poll();
-			if ((node.getPuzzle().equals(Puzzle.goal))) break;
+			node = queue.poll(); // Die Node mit der besten Heuristic + bisherige PathCosts wird entnommen
 
-			while (alreadyVisited(node,visited) && detectDouble) {
-				node = queue.poll();
-				if ((node.getPuzzle().equals(Puzzle.goal))) break;
+			if ((node.getPuzzle().equals(Puzzle.goal))) break; // Zielzustand wird geprüft.
+
+			// Falls detectDouble wahr ist, wird gecheckt, ob der Puzzle-Zustand schon existiert hat.
+			// Falls der Zustand schon erreicht worden ist, wird der Schleifendurchlauf beendet.
+			if(detectDouble){
+				if (alreadyVisited(node,visited)) continue;
 			}
 
-			summary.maxDepthReached = Math.max(currentDepth(node), summary.maxDepthReached);
-			if (currentDepth(node)==maxDepth) continue;
+			// Feststellen der maximalen Tiefe bisher
+			int depth = node.getPathCost();
+			summary.maxDepthReached = Math.max(depth, summary.maxDepthReached);
+			if (depth==maxDepth) continue;
 
+			// Anzahl der bisherigen Expansionen erhöhen und mit Limit abgleichen
 			summary.numExpansions++;
-			if (summary.numExpansions == limit) break;
+			if (summary.numExpansions >= limit) break;
 
-			visited.add(node);
+			// Hinzufügen des Knotens zu der HashMap mit den bereits besuchten PuzzleNodes
+			if (detectDouble){
+				visited.put(node.getPuzzle().getString2D(),node);
+			}
 
-			queue = expand(node,queue);
+			expand(node,queue);
 
 			summary.maxQueueSize = Math.max(summary.maxQueueSize, queue.size());
 		}
 
-
+		// Fehlende Summary Attribute werden ergänzt
 		summary.queueSize = queue.size();
 		summary.finalState = node.getPuzzle();
 		summary.isSolution = node.getPuzzle().equals(Puzzle.goal);
 
-		summary.path = node.getPath();
-		summary.pathLength = node.getPathCost();
+		if (node.getPuzzle().equals(Puzzle.goal)){
+			summary.path = node.getPath();
+			summary.pathLength = node.getPathCost();
+		}
+		else {
+			summary.path = null;
+			summary.pathLength = -1;
+		}
 
 		return summary;
 	}
 
 	public static Summary AStar(Puzzle puzzle, Heuristic heuristic, boolean detectDouble, int maxDepth, int limit) {
+		// Zuweisung der bereits bekannten Summary Attribute
 		Summary summary = new Summary();
 		summary.startState = puzzle;
 		summary.algorithm = "A*";
@@ -61,73 +79,82 @@ public class PuzzleSolver {
 		summary.maxDepthPermitted=maxDepth;
 		summary.path ="";
 
+		// Erstellen einer PriorityQueue zur Bewertung der Nodes
+		// und einer LinkedList zur Speicherung der bereits besuchten Nodes
 		PriorityQueue<PuzzleNode> queue = getPriorityQueue(heuristic,Algorithm.AStar);
-
-		LinkedList<PuzzleNode> visited = new LinkedList<>();
+		HashMap<String,PuzzleNode> visited = new HashMap<>();
 
 		queue.add(new PuzzleNode(null, puzzle,""));
 
 		summary.maxDepthReached = 0;
 		PuzzleNode node = null;
-
 		while (queue.peek()!=null){
-			node = queue.poll();
+			node = queue.poll(); // Die Node mit der besten Heuristic + bisherige PathCosts wird entnommen
 			if ((node.getPuzzle().equals(Puzzle.goal))) break;
 
-			while (alreadyVisited(node,visited) && detectDouble){
-				node = queue.poll();
-				if ((node.getPuzzle().equals(Puzzle.goal))) break;
+			// Falls detectDouble wahr ist, wird gecheckt, ob der Puzzle-Zustand schon existiert hat.
+			// Falls der Zustand schon erreicht worden ist, wird der Schleifendurchlauf beendet.
+			if(detectDouble){
+				if (alreadyVisited(node,visited)) continue;
 			}
 
-			summary.maxDepthReached = Math.max(currentDepth(node), summary.maxDepthReached);
-			if (currentDepth(node)==maxDepth) continue;
+			// Feststellen der maximalen Tiefe bisher
+			int depth = node.getPathCost();
+			summary.maxDepthReached = Math.max(depth, summary.maxDepthReached);
+			if (depth==maxDepth) continue;
 
+			// Anzahl der bisherigen Expansionen erhöhen und mit Limit abgleichen
 			summary.numExpansions++;
 			if (summary.numExpansions == limit) break;
 
-			visited.add(node);
+			// Hinzufügen des Knotens zu der HashMap mit den bereits besuchten PuzzleNodes
+			if (detectDouble){
+				visited.put(node.getPuzzle().getString2D(),node);
+			}
 
-			queue = expand(node,queue);
+			expand(node,queue);
 
 			summary.maxQueueSize = Math.max(summary.maxQueueSize, queue.size());
 		}
 
-
+		// Fehlende Summary Attribute werden ergänzt
 		summary.queueSize = queue.size();
 		summary.finalState = node.getPuzzle();
 		summary.isSolution = node.getPuzzle().equals(Puzzle.goal);
-
-		summary.path = node.getPath();
-		summary.pathLength = node.getPathCost();
+		if (node.getPuzzle().equals(Puzzle.goal)){
+			summary.path = node.getPath();
+			summary.pathLength = node.getPathCost();
+		}
+		else {
+			summary.path = null;
+			summary.pathLength = -1;
+		}
 
 		return summary;
 	}
 
-	public static PriorityQueue<PuzzleNode> expand(PuzzleNode node, PriorityQueue<PuzzleNode> queue){
+	// Expandiert die möglichen Kinder von dem übergebenen Node und fügt diese der PriorityQueue hinzu.
+	public static void expand(PuzzleNode node, PriorityQueue<PuzzleNode> queue){
 		if (node.getPuzzle().canMoveLeft()) queue.add(new PuzzleNode(node,node.getPuzzle().moveLeft(),"L"));
 		if (node.getPuzzle().canMoveRight()) queue.add(new PuzzleNode(node,node.getPuzzle().moveRight(),"R"));
 		if (node.getPuzzle().canMoveUp()) queue.add(new PuzzleNode(node,node.getPuzzle().moveUp(),"U"));
 		if (node.getPuzzle().canMoveDown()) queue.add(new PuzzleNode(node,node.getPuzzle().moveDown(),"D"));
-		return queue;
+
 	}
 
-	public static boolean alreadyVisited(PuzzleNode node, LinkedList<PuzzleNode> visited){
-		for (PuzzleNode visit:
-			 visited) {
-			if (visit.equals(node)) return true;
+	// Methode überprüft, ob eine Node bereits besucht worden ist und überprüft auch, ob die Kosten so gering wie möglich sind.
+	public static boolean alreadyVisited(PuzzleNode node, HashMap<String, PuzzleNode> visited){
+		if (visited.containsKey(node.getPuzzle().getString2D())){
+			if (visited.get(node.getPuzzle().getString2D()).getPathCost()>node.getPathCost()){
+				visited.get(node.getPuzzle().getString2D()).setParent(node.getParent());
+				visited.get(node.getPuzzle().getString2D()).setAction(node.getAction());
+			}
 		}
-		return false;
+		return visited.containsKey(node.getPuzzle().getString2D());
 	}
 
-	public static int currentDepth(PuzzleNode node){
-		int depth = 0;
-		while (node != null){
-			depth++;
-			node = node.getParent();
-		}
-		return depth;
-	}
-
+	// Erstellen einer PriorityQueue, welche die Werte nach den vorher bestimmten Heuristic sortiert.
+	// Dabei wird außerdem darauf geachtet, ob es sich um A* oder Greedy handelt, und dement sprechen die PathCosts dazu addiert.
 	public static PriorityQueue<PuzzleNode> getPriorityQueue(Heuristic heuristic, Algorithm algorithm){
 		return new PriorityQueue<>((o1, o2) -> {
 			int cost1 = 0, cost2 = 0;
