@@ -20,7 +20,7 @@ public class Summary {
 
 	// Output
 	public String toString() {
-		return "Puzzle-Start:"
+		return "Puzzle-Starta:"
 				+ startState
 				+ "Suchalgorithmus: " + algorithm
 				+ "\nHeuristik: " + (heuristic==PuzzleSolver.Heuristic.MANHATTAN ? "Manhattan" : "Anzahl falscher Kacheln")
